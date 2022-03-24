@@ -7,24 +7,31 @@ package testhtml
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 
 func render(p person) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
-		_, err = io.WriteString(w, "<div>")
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
+		_, err = w.WriteString("<div>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<h1>")
+		_, err = w.WriteString("<h1>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(p.name))
+		_, err = w.WriteString(templ.EscapeString(p.name))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</h1>")
+		_, err = w.WriteString("</h1>")
 		if err != nil {
 			return err
 		}
@@ -32,44 +39,44 @@ func render(p person) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<div")
+		_, err = w.WriteString("<div")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " style=\"font-family: &#39;sans-serif&#39;\"")
+		_, err = w.WriteString(" style=\"font-family: &#39;sans-serif&#39;\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " id=\"test\"")
+		_, err = w.WriteString(" id=\"test\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " data-contents=")
+		_, err = w.WriteString(" data-contents=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(`something with "quotes" and a <tag>`))
+		_, err = w.WriteString(templ.EscapeString(`something with "quotes" and a <tag>`))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<div>")
+		_, err = w.WriteString("<div>")
 		if err != nil {
 			return err
 		}
 		var_1 := `email:`
-		_, err = io.WriteString(w, var_1)
+		_, err = w.WriteString(var_1)
 		if err != nil {
 			return err
 		}
@@ -77,102 +84,102 @@ func render(p person) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<a")
+		_, err = w.WriteString("<a")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " href=")
+		_, err = w.WriteString(" href=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
 		var var_2 templ.SafeURL = templ.URL("mailto: " + p.email)
-		_, err = io.WriteString(w, templ.EscapeString(string(var_2)))
+		_, err = w.WriteString(templ.EscapeString(string(var_2)))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(p.email))
+		_, err = w.WriteString(templ.EscapeString(p.email))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</a>")
+		_, err = w.WriteString("</a>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</div>")
+		_, err = w.WriteString("</div>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</div>")
+		_, err = w.WriteString("</div>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</div>")
+		_, err = w.WriteString("</div>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<hr")
-		if err != nil {
-			return err
-		}
-		if true {
-			_, err = io.WriteString(w, " noshade")
-			if err != nil {
-				return err
-			}
-		}
-		_, err = io.WriteString(w, ">")
-		if err != nil {
-			return err
-		}
-		_, err = io.WriteString(w, "<hr")
-		if err != nil {
-			return err
-		}
-		_, err = io.WriteString(w, " optionA")
+		_, err = w.WriteString("<hr")
 		if err != nil {
 			return err
 		}
 		if true {
-			_, err = io.WriteString(w, " optionB")
+			_, err = w.WriteString(" noshade")
 			if err != nil {
 				return err
 			}
 		}
-		_, err = io.WriteString(w, " optionC=\"other\"")
+		_, err = w.WriteString(">")
+		if err != nil {
+			return err
+		}
+		_, err = w.WriteString("<hr")
+		if err != nil {
+			return err
+		}
+		_, err = w.WriteString(" optionA")
+		if err != nil {
+			return err
+		}
+		if true {
+			_, err = w.WriteString(" optionB")
+			if err != nil {
+				return err
+			}
+		}
+		_, err = w.WriteString(" optionC=\"other\"")
 		if err != nil {
 			return err
 		}
 		if false {
-			_, err = io.WriteString(w, " optionD")
+			_, err = w.WriteString(" optionD")
 			if err != nil {
 				return err
 			}
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<hr")
+		_, err = w.WriteString("<hr")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " noshade")
+		_, err = w.WriteString(" noshade")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}

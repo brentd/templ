@@ -7,42 +7,49 @@ package example
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 import "fmt"
 import "time"
 
 func headerTemplate(name string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
 		err = templ.RenderScripts(ctx, w, )
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<header")
+		_, err = w.WriteString("<header")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " data-testid=\"headerTemplate\"")
+		_, err = w.WriteString(" data-testid=\"headerTemplate\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<h1>")
+		_, err = w.WriteString("<h1>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(name))
+		_, err = w.WriteString(templ.EscapeString(name))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</h1>")
+		_, err = w.WriteString("</h1>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</header>")
+		_, err = w.WriteString("</header>")
 		if err != nil {
 			return err
 		}
@@ -51,43 +58,49 @@ func headerTemplate(name string) templ.Component {
 }
 
 func footerTemplate() templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
 		err = templ.RenderScripts(ctx, w, )
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<footer")
+		_, err = w.WriteString("<footer")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " data-testid=\"footerTemplate\"")
+		_, err = w.WriteString(" data-testid=\"footerTemplate\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<div>")
+		_, err = w.WriteString("<div>")
 		if err != nil {
 			return err
 		}
 		var_1 := `&copy; `
-		_, err = io.WriteString(w, var_1)
+		_, err = w.WriteString(var_1)
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(fmt.Sprintf("%d", time.Now().Year())))
+		_, err = w.WriteString(templ.EscapeString(fmt.Sprintf("%d", time.Now().Year())))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</div>")
+		_, err = w.WriteString("</div>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</footer>")
+		_, err = w.WriteString("</footer>")
 		if err != nil {
 			return err
 		}

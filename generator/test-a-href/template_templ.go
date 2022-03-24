@@ -7,33 +7,40 @@ package testahref
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 
 func render() templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
 		err = templ.RenderScripts(ctx, w, )
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<a")
+		_, err = w.WriteString("<a")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " href=\"javascript:alert(&#39;unaffected&#39;);\"")
+		_, err = w.WriteString(" href=\"javascript:alert(&#39;unaffected&#39;);\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
 		var_1 := `Ignored`
-		_, err = io.WriteString(w, var_1)
+		_, err = w.WriteString(var_1)
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</a>")
+		_, err = w.WriteString("</a>")
 		if err != nil {
 			return err
 		}
@@ -41,37 +48,37 @@ func render() templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<a")
+		_, err = w.WriteString("<a")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " href=")
+		_, err = w.WriteString(" href=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
 		var var_2 templ.SafeURL = templ.URL("javascript:alert('should be sanitized')")
-		_, err = io.WriteString(w, templ.EscapeString(string(var_2)))
+		_, err = w.WriteString(templ.EscapeString(string(var_2)))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
 		var_3 := `Sanitized`
-		_, err = io.WriteString(w, var_3)
+		_, err = w.WriteString(var_3)
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</a>")
+		_, err = w.WriteString("</a>")
 		if err != nil {
 			return err
 		}
@@ -79,37 +86,37 @@ func render() templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<a")
+		_, err = w.WriteString("<a")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " href=")
+		_, err = w.WriteString(" href=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
 		var var_4 templ.SafeURL = templ.SafeURL("javascript:alert('should not be sanitized')")
-		_, err = io.WriteString(w, templ.EscapeString(string(var_4)))
+		_, err = w.WriteString(templ.EscapeString(string(var_4)))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
 		var_5 := `Unsanitized`
-		_, err = io.WriteString(w, var_5)
+		_, err = w.WriteString(var_5)
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</a>")
+		_, err = w.WriteString("</a>")
 		if err != nil {
 			return err
 		}

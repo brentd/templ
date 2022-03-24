@@ -168,6 +168,10 @@ func (g *generator) writeImports() error {
 		if _, err = g.w.Write("import \"io\"\n"); err != nil {
 			return err
 		}
+		// Used to buffer writes.
+		if _, err = g.w.Write("import \"bufio\"\n"); err != nil {
+			return err
+		}
 	}
 	if hasCSS {
 		// strings.Builder is used to create CSS.
@@ -321,7 +325,7 @@ func (g *generator) writeTemplate(t parser.HTMLTemplate) error {
 	}
 	indentLevel++
 	// return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) error {
-	if _, err = g.w.WriteIndent(indentLevel, "return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {\n"); err != nil {
+	if _, err = g.w.WriteIndent(indentLevel, "return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {\n"); err != nil {
 		return err
 	}
 	{
@@ -524,8 +528,8 @@ func (g *generator) writeCallTemplateExpression(indentLevel int, n parser.CallTe
 		return err
 	}
 	g.sourceMap.Add(n.Expression, r)
-	// .Render(ctx w)
-	if _, err = g.w.Write(".Render(ctx, w)\n"); err != nil {
+	// .Render(ctx, w.(io.Writer))
+	if _, err = g.w.Write(".Render(ctx, w.(io.Writer))\n"); err != nil {
 		return err
 	}
 	if err = g.writeErrorHandler(indentLevel); err != nil {

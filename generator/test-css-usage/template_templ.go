@@ -7,6 +7,7 @@ package testcssusage
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 import "strings"
 
 func green() templ.CSSClass {
@@ -31,9 +32,15 @@ func className() templ.CSSClass {
 }
 
 func Button(text string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
 		var var_1 templ.CSSClasses = templ.Classes(className(), templ.Class("&&&unsafe"), templ.SafeClass("safe"))
 		err = templ.RenderCSS(ctx, w, var_1)
 		if err != nil {
@@ -43,39 +50,39 @@ func Button(text string) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<button")
+		_, err = w.WriteString("<button")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " class=")
+		_, err = w.WriteString(" class=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(var_1.String()))
+		_, err = w.WriteString(templ.EscapeString(var_1.String()))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " type=\"button\"")
+		_, err = w.WriteString(" type=\"button\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(text))
+		_, err = w.WriteString(templ.EscapeString(text))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</button>")
+		_, err = w.WriteString("</button>")
 		if err != nil {
 			return err
 		}
@@ -84,14 +91,20 @@ func Button(text string) templ.Component {
 }
 
 func ThreeButtons() templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
-		err = Button("A").Render(ctx, w)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
+		err = Button("A").Render(ctx, w.(io.Writer))
 		if err != nil {
 			return err
 		}
-		err = Button("B").Render(ctx, w)
+		err = Button("B").Render(ctx, w.(io.Writer))
 		if err != nil {
 			return err
 		}
@@ -104,39 +117,39 @@ func ThreeButtons() templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<button")
+		_, err = w.WriteString("<button")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " class=")
+		_, err = w.WriteString(" class=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(var_2.String()))
+		_, err = w.WriteString(templ.EscapeString(var_2.String()))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " type=\"button\"")
+		_, err = w.WriteString(" type=\"button\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString("Green"))
+		_, err = w.WriteString(templ.EscapeString("Green"))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</button>")
+		_, err = w.WriteString("</button>")
 		if err != nil {
 			return err
 		}

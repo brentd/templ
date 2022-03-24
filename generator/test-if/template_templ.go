@@ -7,18 +7,25 @@ package testif
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 
 func render(d data) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
 		if d.IsTrue() {
-			_, err = io.WriteString(w, templ.EscapeString("True"))
+			_, err = w.WriteString(templ.EscapeString("True"))
 			if err != nil {
 				return err
 			}
 		} else {
-			_, err = io.WriteString(w, templ.EscapeString("False"))
+			_, err = w.WriteString(templ.EscapeString("False"))
 			if err != nil {
 				return err
 			}

@@ -7,12 +7,19 @@ package testhtml
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 
 func BasicTemplate(url string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
-		_, err = io.WriteString(w, "<div>")
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
+		_, err = w.WriteString("<div>")
 		if err != nil {
 			return err
 		}
@@ -20,41 +27,41 @@ func BasicTemplate(url string) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<a")
+		_, err = w.WriteString("<a")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " href=")
+		_, err = w.WriteString(" href=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
 		var var_1 templ.SafeURL = templ.URL(url)
-		_, err = io.WriteString(w, templ.EscapeString(string(var_1)))
+		_, err = w.WriteString(templ.EscapeString(string(var_1)))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
 		var_2 := `text`
-		_, err = io.WriteString(w, var_2)
+		_, err = w.WriteString(var_2)
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</a>")
+		_, err = w.WriteString("</a>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</div>")
+		_, err = w.WriteString("</div>")
 		if err != nil {
 			return err
 		}

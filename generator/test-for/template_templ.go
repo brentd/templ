@@ -7,21 +7,28 @@ package testfor
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 
 func render(items []string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
 		for _, item := range items {
-			_, err = io.WriteString(w, "<div>")
+			_, err = w.WriteString("<div>")
 			if err != nil {
 				return err
 			}
-			_, err = io.WriteString(w, templ.EscapeString(item))
+			_, err = w.WriteString(templ.EscapeString(item))
 			if err != nil {
 				return err
 			}
-			_, err = io.WriteString(w, "</div>")
+			_, err = w.WriteString("</div>")
 			if err != nil {
 				return err
 			}

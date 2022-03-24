@@ -7,18 +7,25 @@ package testswitchdefault
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 
 func template(input string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
 		switch input {
 		case "a":
-			_, err = io.WriteString(w, templ.EscapeString("it was 'a'"))
+			_, err = w.WriteString(templ.EscapeString("it was 'a'"))
 			if err != nil {
 				return err
 			}
-		default:			_, err = io.WriteString(w, templ.EscapeString("it was something else"))
+		default:			_, err = w.WriteString(templ.EscapeString("it was something else"))
 			if err != nil {
 				return err
 			}

@@ -7,68 +7,75 @@ package turbo
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 
 func actionTemplate(action string, target string, template templ.Component) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
 		err = templ.RenderScripts(ctx, w, )
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<turbo-stream")
+		_, err = w.WriteString("<turbo-stream")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " action=")
+		_, err = w.WriteString(" action=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(action))
+		_, err = w.WriteString(templ.EscapeString(action))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " target=")
+		_, err = w.WriteString(" target=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(target))
+		_, err = w.WriteString(templ.EscapeString(target))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<template>")
+		_, err = w.WriteString("<template>")
 		if err != nil {
 			return err
 		}
-		err = template.Render(ctx, w)
+		err = template.Render(ctx, w.(io.Writer))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</template>")
+		_, err = w.WriteString("</template>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</turbo-stream>")
+		_, err = w.WriteString("</turbo-stream>")
 		if err != nil {
 			return err
 		}
@@ -77,54 +84,60 @@ func actionTemplate(action string, target string, template templ.Component) temp
 }
 
 func removeTemplate(action string, target string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
 		err = templ.RenderScripts(ctx, w, )
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<turbo-stream")
+		_, err = w.WriteString("<turbo-stream")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " action=")
+		_, err = w.WriteString(" action=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(action))
+		_, err = w.WriteString(templ.EscapeString(action))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " target=")
+		_, err = w.WriteString(" target=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(target))
+		_, err = w.WriteString(templ.EscapeString(target))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</turbo-stream>")
+		_, err = w.WriteString("</turbo-stream>")
 		if err != nil {
 			return err
 		}

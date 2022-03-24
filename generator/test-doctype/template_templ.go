@@ -7,12 +7,19 @@ package testdoctype
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 
 func Layout(title, content string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
-		_, err = io.WriteString(w, `<!doctype html>`)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
+		_, err = w.WriteString(`<!doctype html>`)
 		if err != nil {
 			return err
 		}
@@ -20,95 +27,95 @@ func Layout(title, content string) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<html")
+		_, err = w.WriteString("<html")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " lang=\"en\"")
+		_, err = w.WriteString(" lang=\"en\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<head>")
+		_, err = w.WriteString("<head>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<meta")
+		_, err = w.WriteString("<meta")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " charset=\"UTF-8\"")
+		_, err = w.WriteString(" charset=\"UTF-8\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<meta")
+		_, err = w.WriteString("<meta")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " http-equiv=\"X-UA-Compatible\"")
+		_, err = w.WriteString(" http-equiv=\"X-UA-Compatible\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " content=\"IE=edge\"")
+		_, err = w.WriteString(" content=\"IE=edge\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<meta")
+		_, err = w.WriteString("<meta")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " name=\"viewport\"")
+		_, err = w.WriteString(" name=\"viewport\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " content=\"width=device-width, initial-scale=1.0\"")
+		_, err = w.WriteString(" content=\"width=device-width, initial-scale=1.0\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<title>")
+		_, err = w.WriteString("<title>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(title))
+		_, err = w.WriteString(templ.EscapeString(title))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</title>")
+		_, err = w.WriteString("</title>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</head>")
+		_, err = w.WriteString("</head>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<body>")
+		_, err = w.WriteString("<body>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(content))
+		_, err = w.WriteString(templ.EscapeString(content))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</body>")
+		_, err = w.WriteString("</body>")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</html>")
+		_, err = w.WriteString("</html>")
 		if err != nil {
 			return err
 		}

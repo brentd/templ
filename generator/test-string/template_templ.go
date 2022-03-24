@@ -7,12 +7,19 @@ package teststring
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 
 func render(s string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
-		_, err = io.WriteString(w, templ.EscapeString(s))
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
+		_, err = w.WriteString(templ.EscapeString(s))
 		if err != nil {
 			return err
 		}

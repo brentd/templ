@@ -245,7 +245,7 @@ func (cssh CSSHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // RenderCSS renders a <style> element with CSS content, if the styles have not already been rendered.
-func RenderCSS(ctx context.Context, w io.Writer, classes []CSSClass) (err error) {
+func RenderCSS(ctx context.Context, w io.StringWriter, classes []CSSClass) (err error) {
 	_, rc := RenderedCSSClassesFromContext(ctx)
 	var sb strings.Builder
 	for _, c := range classes {
@@ -257,13 +257,13 @@ func RenderCSS(ctx context.Context, w io.Writer, classes []CSSClass) (err error)
 		}
 	}
 	if sb.Len() > 0 {
-		if _, err = io.WriteString(w, `<style type="text/css">`); err != nil {
+		if _, err = w.WriteString(`<style type="text/css">`); err != nil {
 			return err
 		}
-		if _, err = io.WriteString(w, sb.String()); err != nil {
+		if _, err = w.WriteString(sb.String()); err != nil {
 			return err
 		}
-		if _, err = io.WriteString(w, `</style>`); err != nil {
+		if _, err = w.WriteString(`</style>`); err != nil {
 			return err
 		}
 	}
@@ -372,7 +372,7 @@ func RenderedScriptsFromContext(ctx context.Context) (context.Context, *StringSe
 }
 
 // RenderScripts renders a <script> element, if the script has not already been rendered.
-func RenderScripts(ctx context.Context, w io.Writer, scripts ...ComponentScript) (err error) {
+func RenderScripts(ctx context.Context, w io.StringWriter, scripts ...ComponentScript) (err error) {
 	_, rs := RenderedScriptsFromContext(ctx)
 	var sb strings.Builder
 	for _, s := range scripts {
@@ -382,13 +382,13 @@ func RenderScripts(ctx context.Context, w io.Writer, scripts ...ComponentScript)
 		}
 	}
 	if sb.Len() > 0 {
-		if _, err = io.WriteString(w, `<script type="text/javascript">`); err != nil {
+		if _, err = w.WriteString(`<script type="text/javascript">`); err != nil {
 			return err
 		}
-		if _, err = io.WriteString(w, sb.String()); err != nil {
+		if _, err = w.WriteString(sb.String()); err != nil {
 			return err
 		}
-		if _, err = io.WriteString(w, `</script>`); err != nil {
+		if _, err = w.WriteString(`</script>`); err != nil {
 			return err
 		}
 	}

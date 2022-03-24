@@ -7,6 +7,7 @@ package testscriptusage
 import "github.com/a-h/templ"
 import "context"
 import "io"
+import "bufio"
 
 func withParameters(a string, b string, c int) templ.ComponentScript {
 	return templ.ComponentScript{
@@ -25,64 +26,70 @@ func withoutParameters() templ.ComponentScript {
 }
 
 func Button(text string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
 		err = templ.RenderScripts(ctx, w, withParameters("test", text, 123), withoutParameters())
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<button")
+		_, err = w.WriteString("<button")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " onClick=")
+		_, err = w.WriteString(" onClick=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
 		var var_1 templ.ComponentScript = withParameters("test", text, 123)
-		_, err = io.WriteString(w, var_1.Call)
+		_, err = w.WriteString(var_1.Call)
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " onMouseover=")
+		_, err = w.WriteString(" onMouseover=")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
 		var var_2 templ.ComponentScript = withoutParameters()
-		_, err = io.WriteString(w, var_2.Call)
+		_, err = w.WriteString(var_2.Call)
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "\"")
+		_, err = w.WriteString("\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " type=\"button\"")
+		_, err = w.WriteString(" type=\"button\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, templ.EscapeString(text))
+		_, err = w.WriteString(templ.EscapeString(text))
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</button>")
+		_, err = w.WriteString("</button>")
 		if err != nil {
 			return err
 		}
@@ -91,14 +98,20 @@ func Button(text string) templ.Component {
 }
 
 func ThreeButtons() templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+	return templ.ComponentFunc(func(ctx context.Context, writer io.Writer) (err error) {
 		ctx, _ = templ.RenderedCSSClassesFromContext(ctx)
 		ctx, _ = templ.RenderedScriptsFromContext(ctx)
-		err = Button("A").Render(ctx, w)
+		w, ok := writer.(io.StringWriter)
+		if !ok {
+			templw := bufio.NewWriter(writer)
+			w = templw
+			defer templw.Flush()
+		}
+		err = Button("A").Render(ctx, w.(io.Writer))
 		if err != nil {
 			return err
 		}
-		err = Button("B").Render(ctx, w)
+		err = Button("B").Render(ctx, w.(io.Writer))
 		if err != nil {
 			return err
 		}
@@ -106,28 +119,28 @@ func ThreeButtons() templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "<button")
+		_, err = w.WriteString("<button")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " onMouseover=\"console.log(&#39;mouseover&#39;)\"")
+		_, err = w.WriteString(" onMouseover=\"console.log(&#39;mouseover&#39;)\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, " type=\"button\"")
+		_, err = w.WriteString(" type=\"button\"")
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, ">")
+		_, err = w.WriteString(">")
 		if err != nil {
 			return err
 		}
 		var_3 := `Button C`
-		_, err = io.WriteString(w, var_3)
+		_, err = w.WriteString(var_3)
 		if err != nil {
 			return err
 		}
-		_, err = io.WriteString(w, "</button>")
+		_, err = w.WriteString("</button>")
 		if err != nil {
 			return err
 		}
